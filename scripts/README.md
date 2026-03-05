@@ -2,32 +2,29 @@
 
 ## Предварительные требования
 
-1. PostgreSQL запущен в Docker-контейнере с именем `postgres`
+1. PostgreSQL запущен в Docker-контейнере
 2. База данных: `rectification_db`
-3. Пользователь: `postgres`
+3. Файл `.env` в корне проекта
 
 ## Использование
 
 ### Создание бэкапа
 
-```bash
+```powershell
 cd scripts
-chmod +x backup.sh
-./backup.sh
+.\backup.ps1
 ```
 
 **Особенности:**
-- Бэкапы сохраняются в папку `backups/`
-- Формат: `backup_YYYYMMDD_HHMMSS.sql` (сжатый дамп)
+- Бэкапы сохраняются в папку `scripts/backups/`
+- Формат: `backup_YYYYMMDD_HHMMSS.sql`
 - Автоматически удаляются бэкапы старше 30 дней
-- Контейнер должен называться `postgres` (измените в скрипте при необходимости)
 
 ### Восстановление из бэкапа
 
-```bash
+```powershell
 cd scripts
-chmod +x restore.sh
-./restore.sh
+.\restore.ps1
 ```
 
 **Особенности:**
@@ -38,22 +35,15 @@ chmod +x restore.sh
 
 ## Настройка
 
-При необходимости измените параметры в начале скриптов:
+При необходимости измените параметры в `.env` файле:
 
-```bash
-CONTAINER_NAME="postgres"  # Имя контейнера
-DB_NAME="rectification_db" # Имя базы данных
-DB_USER="postgres"         # Пользователь БД
-BACKUP_DIR="./backups"     # Папка для бэкапов
+```
+POSTGRES_HOST=rectification-db
+POSTGRES_DB=rectification_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
 ```
 
 ## Cron (автоматический бэкап)
 
-Добавьте в crontab для ежедневного бэкапа в 3 часа ночи:
-
-```bash
-crontab -e
-
-# Добавить строку:
-0 3 * * * /полный/путь/к/scripts/backup.sh >> /var/log/backup.log 2>&1
-```
+Для Windows используйте Task Scheduler или создайте .bat файл.
