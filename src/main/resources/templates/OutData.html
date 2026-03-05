@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты ректификации</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .result-card { border-radius: 15px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .section-title { border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px; font-weight: 600; color: #495057; }
+        .val-badge { font-weight: bold; color: #0d6efd; background: #e7f1ff; padding: 2px 8px; border-radius: 4px; }
+        .danger-badge { font-weight: bold; color: #dc3545; background: #f8d7da; padding: 2px 8px; border-radius: 4px; }
+        .success-badge { font-weight: bold; color: #198754; background: #d1e7dd; padding: 4px 12px; border-radius: 6px; font-size: 1.1em; }
+        .info-row { margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .source-link { font-size: 0.85rem; color: #6c757d; text-decoration: none; }
+        .source-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card result-card p-4 mb-4">
+                    <h2 class="text-center mb-4">Результаты расчета</h2>
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5 class="section-title">Исходные данные</h5>
+                            <div class="row g-3">
+                                <div class="col-6 col-md-3">
+                                    <small class="text-muted d-block">Спирт сырец</small>
+                                    <span class="val-badge" th:text="${inData.amountOfRawAlcohol} + ' л'"></span>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <small class="text-muted d-block">Крепость</small>
+                                    <span class="val-badge" th:text="${inData.alcoholStrength} + ' %'"></span>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <small class="text-muted d-block">Мощность</small>
+                                    <span class="val-badge" th:text="${inData.power} + ' кВт'"></span>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <small class="text-muted d-block">Вода в УО</small>
+                                    <span class="val-badge" th:text="${inData.water} + ' мл'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info py-2 text-center">
+                        <strong>Абсолютный спирт (АС):</strong> <span th:text="${outData.absoluteAlcohol}"></span> мл
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="section-title text-danger">Головы и фракции</h5>
+                        <div class="info-row">
+                            <span>Головы (96%):</span>
+                            <span class="fw-bold" th:text="${#numbers.formatDecimal(outData.heads*100/96, 1, 0)} + ' мл'"></span>
+                        </div>
+                        <div class="info-row">
+                            <span>Головы + вода (НА РОЗЖИГ):</span>
+                            <span class="danger-badge" th:text="${#numbers.formatDecimal(outData.heads*100/96 + inData.water, 1, 0)} + ' мл'"></span>
+                        </div>
+                        <div class="info-row text-muted small ps-3">
+                            <span>Скорость (1/3 объема):</span>
+                            <span th:text="${#numbers.formatDecimal((outData.heads*100/96 + inData.water)/3, 1, 0)} + ' мл (1-3 к/с)'"></span>
+                        </div>
+                        <div class="info-row mt-2">
+                            <span>Головы + ТС (ОБОРОТ):</span>
+                            <span class="fw-bold" th:text="${#numbers.formatDecimal(outData.headsAndCommercialAlcohol*100/96, 1, 0)} + ' мл (4 к/с)'"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-light rounded border">
+                        <h5 class="section-title text-success">Товарный спирт</h5>
+                        <div class="text-center my-3">
+                            <span class="success-badge" th:text="${#numbers.formatDecimal(outData.commercialAlcohol*100/96, 1, 0)} + ' мл'"></span>
+                        </div>
+                        <div class="row text-center small">
+                            <div class="col-6">
+                                <div class="text-muted">Скорость отбора</div>
+                                <div class="fw-bold" th:text="${inData.power} + ' л/час'"></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted">Длительность</div>
+                                <div class="fw-bold" th:text="${#numbers.formatDecimal(outData.commercialAlcohol/(inData.power*1000), 1, 1)} + ' ч.'"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="section-title">Остатки и хвосты</h5>
+                        <div class="info-row">
+                            <span>Спиртовой остаток:</span>
+                            <span th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions} + ' мл АС'"></span>
+                        </div>
+                        <div class="info-row">
+                            <span>АС (ОБОРОТ):</span>
+                            <span class="fw-bold" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
+                        </div>
+                        <div class="info-row">
+                            <span>Хвосты (ВЫЛИТЬ):</span>
+                            <span class="text-danger fw-bold" th:text="${outData.tails} + ' мл'"></span>
+                        </div>
+                        <div class="text-center mt-3">
+                            <small class="text-muted italic">Отбор до 85°C в кубе</small>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <a href="/new" class="btn btn-primary me-2">Новый расчет</a>
+                        <a href="/" class="btn btn-outline-secondary me-2">История</a>
+                        <a href="https://www.youtube.com/watch?v=OyaRYPjnJ1U" target="_blank" class="source-link">
+                            <i class="bi bi-youtube"></i> Видео-источник методики
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

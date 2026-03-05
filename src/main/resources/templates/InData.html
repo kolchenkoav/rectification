@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ввод данных - Ректификация</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-primary { border-radius: 8px; padding: 10px 20px; }
+    </style>
+</head>
+<body class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h3 class="text-center mb-4 text-primary">Параметры ректификации</h3>
+                    <form method="POST" action="/info" th:object="${inData}">
+                        <div class="mb-3">
+                            <label class="form-label">Спирт сырец (литры)</label>
+                            <input type="number" step="0.1" class="form-control" placeholder="Напр: 19" th:field="*{amountOfRawAlcohol}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Крепость (%)</label>
+                            <input type="number" step="0.1" class="form-control" placeholder="Напр: 40" th:field="*{alcoholStrength}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Мощность (кВт)</label>
+                            <input type="number" step="0.1" class="form-control" placeholder="Напр: 1.5" th:field="*{power}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Вода в узле отбора (мл)</label>
+                            <input type="number" class="form-control" placeholder="Напр: 500" th:field="*{water}" required>
+                        </div>
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Рассчитать</button>
+                            <a href="/" class="btn btn-outline-secondary">Назад к истории</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
