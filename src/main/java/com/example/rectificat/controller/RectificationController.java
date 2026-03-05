@@ -1,8 +1,10 @@
 package com.example.rectificat.controller;
 
+import com.example.rectificat.model.Detail;
 import com.example.rectificat.model.InData;
 import com.example.rectificat.model.OutData;
 import com.example.rectificat.model.RectificationHistory;
+import com.example.rectificat.repository.DetailRepository;
 import com.example.rectificat.repository.RectificationHistoryRepository;
 import com.example.rectificat.services.RectificationService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +19,18 @@ import java.util.List;
 public class RectificationController {
     private final RectificationService service;
     private final RectificationHistoryRepository historyRepository;
+    private final DetailRepository detailRepository;
 
     InData inData;
     OutData outData;
     List<String> value;
 
-    public RectificationController(RectificationService service, RectificationHistoryRepository historyRepository) {
+    public RectificationController(RectificationService service,
+                                   RectificationHistoryRepository historyRepository,
+                                   DetailRepository detailRepository) {
         this.service = service;
         this.historyRepository = historyRepository;
+        this.detailRepository = detailRepository;
         inData = new InData(19, 40, 0.6, 25);
         outData = new OutData();
     }
@@ -44,6 +50,59 @@ public class RectificationController {
     @GetMapping("/info")
     public String infoRedirect() {
         return "redirect:/new";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteHistory(@PathVariable Long id) {
+        historyRepository.deleteById(id);
+        return "redirect:/";
+    }
+
+    @PostMapping("/clear")
+    public String clearHistory() {
+        historyRepository.deleteAll();
+        return "redirect:/";
+    }
+
+    @GetMapping("/view/{id}")
+    public String viewHistory(@PathVariable Long id, Model model) {
+        historyRepository.findById(id).ifPresent(history -> {
+            InData data = new InData();
+            data.setAmountOfRawAlcohol(history.getAmountOfRawAlcohol());
+            data.setAlcoholStrength(history.getAlcoholStrength());
+            data.setPower(history.getPower());
+            data.setWater(history.getWater());
+
+            OutData out = service.calc(data);
+            List<Detail> details = detailRepository.findByHistoryIdOrderByRecordTimeDesc(id);
+
+            model.addAttribute("inData", data);
+            model.addAttribute("outData", out);
+            model.addAttribute("details", details);
+            model.addAttribute("historyId", id);
+        });
+        return "OutData";
+    }
+
+    @PostMapping("/view/{id}/detail")
+    public String addDetail(@PathVariable Long id,
+                           @RequestParam Double temperatureCube,
+                           @RequestParam Double temperatureTsar,
+                           @RequestParam Double temperatureAtmosphere,
+                           @RequestParam Double temperatureWater) {
+        historyRepository.findById(id).ifPresent(history -> {
+            Detail detail = new Detail(temperatureCube, temperatureTsar, temperatureAtmosphere, temperatureWater);
+            history.addDetail(detail);
+            historyRepository.save(history);
+            log.info("Добавлена запись деталей для расчета {}", id);
+        });
+        return "redirect:/view/" + id;
+    }
+
+    @PostMapping("/view/{historyId}/detail/{detailId}/delete")
+    public String deleteDetail(@PathVariable Long historyId, @PathVariable Long detailId) {
+        detailRepository.deleteById(detailId);
+        return "redirect:/view/" + historyId;
     }
 
     @PostMapping("/info")

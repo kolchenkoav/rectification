@@ -2,6 +2,7 @@ package com.example.rectificat.controller;
 
 import com.example.rectificat.model.InData;
 import com.example.rectificat.model.RectificationHistory;
+import com.example.rectificat.repository.DetailRepository;
 import com.example.rectificat.repository.RectificationHistoryRepository;
 import com.example.rectificat.services.RectificationService;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class RectificationControllerTest {
 
     @MockBean
     private RectificationHistoryRepository historyRepository;
+
+    @MockBean
+    private DetailRepository detailRepository;
 
     @Test
     void index_shouldReturnHistoryView() throws Exception {

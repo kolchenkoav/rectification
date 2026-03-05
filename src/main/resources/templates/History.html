@@ -16,9 +16,16 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="text-primary">История расчетов</h2>
-            <a href="/new" class="btn btn-primary btn-lg">
-                <i class="bi bi-plus-circle me-2"></i>Новый расчет
-            </a>
+            <div>
+                <form th:action="@{/clear}" method="post" style="display: inline;" onsubmit="return confirm('Вы уверены, что хотите очистить всю историю?');">
+                    <button type="submit" class="btn btn-outline-danger btn-lg me-2">
+                        <i class="bi bi-trash me-2"></i>Очистить всё
+                    </button>
+                </form>
+                <a href="/new" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-circle me-2"></i>Новый расчет
+                </a>
+            </div>
         </div>
 
         <div class="card p-4">
@@ -35,6 +42,7 @@
                             <th>Крепость (%)</th>
                             <th>Мощность (кВт)</th>
                             <th>Вода (мл)</th>
+                            <th class="text-end">Действия</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,6 +52,16 @@
                             <td th:text="${item.alcoholStrength}"></td>
                             <td th:text="${item.power}"></td>
                             <td th:text="${item.water}"></td>
+                            <td class="text-end">
+                                <a th:href="@{'/view/' + ${item.id}}" class="btn btn-sm btn-outline-info me-1" title="Посмотреть">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <form th:action="@{'/delete/' + ${item.id}}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить эту запись?')" title="Удалить">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

@@ -108,6 +108,74 @@
                         </div>
                     </div>
 
+                    <!-- Детали измерений -->
+                    <div class="mt-4">
+                        <h5 class="section-title">Температурный режим</h5>
+
+                        <!-- Форма добавления записи -->
+                        <div class="card mb-3" th:if="${historyId != null}">
+                            <div class="card-body">
+                                <h6 class="card-title">Добавить замер</h6>
+                                <form th:action="@{'/view/' + ${historyId} + '/detail'}" method="post" class="row g-3">
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small">Темп. в кубе (°C)</label>
+                                        <input type="number" step="0.1" class="form-control form-control-sm" name="temperatureCube" required>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small">Темп. в царге (°C)</label>
+                                        <input type="number" step="0.1" class="form-control form-control-sm" name="temperatureTsar" required>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small">Темп. атмосфера (°C)</label>
+                                        <input type="number" step="0.1" class="form-control form-control-sm" name="temperatureAtmosphere" required>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small">Темп. воды (°C)</label>
+                                        <input type="number" step="0.1" class="form-control form-control-sm" name="temperatureWater" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-sm btn-success">Добавить замер</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Таблица записей -->
+                        <div th:if="${details != null and not #lists.isEmpty(details)}" class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Время</th>
+                                        <th>Куб (°C)</th>
+                                        <th>Царга (°C)</th>
+                                        <th>Атмосфера (°C)</th>
+                                        <th>Вода (°C)</th>
+                                        <th th:if="${historyId != null}"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="detail : ${details}">
+                                        <td th:text="${#temporals.format(detail.recordTime, 'HH:mm:ss')}"></td>
+                                        <td th:text="${detail.temperatureCube}"></td>
+                                        <td th:text="${detail.temperatureTsar}"></td>
+                                        <td th:text="${detail.temperatureAtmosphere}"></td>
+                                        <td th:text="${detail.temperatureWater}"></td>
+                                        <td th:if="${historyId != null}">
+                                            <form th:action="@{'/view/' + ${historyId} + '/detail/' + ${detail.id} + '/delete'}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить?')">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:if="${details == null or #lists.isEmpty(details)}" class="text-muted small">
+                            Замеров пока нет
+                        </div>
+                    </div>
+
                     <div class="text-center mt-5">
                         <a href="/new" class="btn btn-primary me-2">Новый расчет</a>
                         <a href="/" class="btn btn-outline-secondary me-2">История</a>

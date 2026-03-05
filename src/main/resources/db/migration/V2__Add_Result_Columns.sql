@@ -1,0 +1,5 @@
+ALTER TABLE rectification_history 
+ADD COLUMN absolute_alcohol DOUBLE PRECISION,
+ADD COLUMN heads DOUBLE PRECISION,
+ADD COLUMN commercial_alcohol INT,
+ADD COLUMN tails DOUBLE PRECISION;
