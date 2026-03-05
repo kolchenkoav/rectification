@@ -84,6 +84,25 @@ public class RectificationController {
         return "OutData";
     }
 
+    @GetMapping("/print/{id}")
+    public String printHistory(@PathVariable Long id, Model model) {
+        historyRepository.findById(id).ifPresent(history -> {
+            InData data = new InData();
+            data.setAmountOfRawAlcohol(history.getAmountOfRawAlcohol());
+            data.setAlcoholStrength(history.getAlcoholStrength());
+            data.setPower(history.getPower());
+            data.setWater(history.getWater());
+
+            OutData out = service.calc(data);
+            List<Detail> details = detailRepository.findByHistoryIdOrderByRecordTimeDesc(id);
+
+            model.addAttribute("inData", data);
+            model.addAttribute("outData", out);
+            model.addAttribute("details", details);
+        });
+        return "Print";
+    }
+
     @PostMapping("/view/{id}/detail")
     public String addDetail(@PathVariable Long id,
                            @RequestParam Double temperatureCube,

@@ -56,6 +56,9 @@
                                 <a th:href="@{'/view/' + ${item.id}}" class="btn btn-sm btn-outline-info me-1" title="Посмотреть">
                                     <i class="bi bi-eye"></i>
                                 </a>
+                                <a th:href="@{'/print/' + ${item.id}}" target="_blank" class="btn btn-sm btn-outline-secondary me-1" title="Печать">
+                                    <i class="bi bi-printer"></i>
+                                </a>
                                 <form th:action="@{'/delete/' + ${item.id}}" method="post" style="display: inline;">
                                     <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить эту запись?')" title="Удалить">
                                         <i class="bi bi-trash"></i>

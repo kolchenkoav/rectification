@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Печать - Ректификация</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h2 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .section { margin: 20px 0; }
+        .section h3 { background: #eee; padding: 5px 10px; margin-bottom: 10px; }
+        .data-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dotted #ccc; }
+        .data-label { font-weight: bold; }
+        .highlight { font-weight: bold; color: #000; }
+        .danger { color: #d00; }
+        .success { font-size: 1.2em; font-weight: bold; }
+        .no-print { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; }
+        
+        @media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h2>Протокол ректификации</h2>
+    
+    <div class="section">
+        <h3>Исходные данные</h3>
+        <div class="data-row">
+            <span class="data-label">Спирт сырец:</span>
+            <span th:text="${inData.amountOfRawAlcohol} + ' л'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Крепость:</span>
+            <span th:text="${inData.alcoholStrength} + ' %'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Мощность:</span>
+            <span th:text="${inData.power} + ' кВт'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Вода в УО:</span>
+            <span th:text="${inData.water} + ' мл'"></span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Результаты расчета</h3>
+        <div class="data-row">
+            <span class="data-label">Абсолютный спирт (АС):</span>
+            <span class="highlight" th:text="${outData.absoluteAlcohol} + ' мл'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Головы (96%):</span>
+            <span th:text="${#numbers.formatDecimal(outData.heads*100/96, 1, 0)} + ' мл'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Головы + вода (НА РОЗЖИГ):</span>
+            <span class="danger" th:text="${#numbers.formatDecimal(outData.heads*100/96 + inData.water, 1, 0)} + ' мл'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Скорость (1/3 объема):</span>
+            <span th:text="${#numbers.formatDecimal((outData.heads*100/96 + inData.water)/3, 1, 0)} + ' мл (1-3 к/с)'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Головы + ТС (ОБОРОТ):</span>
+            <span th:text="${#numbers.formatDecimal(outData.headsAndCommercialAlcohol*100/96, 1, 0)} + ' мл (4 к/с)'"></span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Товарный спирт</h3>
+        <div class="data-row">
+            <span class="data-label">Объем:</span>
+            <span class="success" th:text="${#numbers.formatDecimal(outData.commercialAlcohol*100/96, 1, 0)} + ' мл'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Скорость отбора:</span>
+            <span th:text="${inData.power} + ' л/час'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Длительность:</span>
+            <span th:text="${#numbers.formatDecimal(outData.commercialAlcohol/(inData.power*1000), 1, 1)} + ' часов'"></span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Остатки и хвосты</h3>
+        <div class="data-row">
+            <span class="data-label">Спиртовой остаток:</span>
+            <span th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions} + ' мл АС'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">АС (ОБОРОТ):</span>
+            <span class="highlight" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Хвосты (ВЫЛИТЬ):</span>
+            <span class="danger" th:text="${outData.tails} + ' мл'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Отбор до:</span>
+            <span>85°C в кубе</span>
+        </div>
+    </div>
+
+    <div class="section" th:if="${details != null and not #lists.isEmpty(details)}">
+        <h3>Температурные замеры</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr style="background: #eee;">
+                    <th style="border: 1px solid #333; padding: 5px;">Время</th>
+                    <th style="border: 1px solid #333; padding: 5px;">Куб (°C)</th>
+                    <th style="border: 1px solid #333; padding: 5px;">Царга (°C)</th>
+                    <th style="border: 1px solid #333; padding: 5px;">Атмосфера (°C)</th>
+                    <th style="border: 1px solid #333; padding: 5px;">Вода (°C)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="detail : ${details}">
+                    <td style="border: 1px solid #333; padding: 5px;" th:text="${#temporals.format(detail.recordTime, 'HH:mm:ss')}"></td>
+                    <td style="border: 1px solid #333; padding: 5px;" th:text="${detail.temperatureCube}"></td>
+                    <td style="border: 1px solid #333; padding: 5px;" th:text="${detail.temperatureTsar}"></td>
+                    <td style="border: 1px solid #333; padding: 5px;" th:text="${detail.temperatureAtmosphere}"></td>
+                    <td style="border: 1px solid #333; padding: 5px;" th:text="${detail.temperatureWater}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="no-print">
+        <button onclick="window.print()" style="padding: 10px 30px; font-size: 16px; cursor: pointer;">Печать</button>
+        <button onclick="window.close()" style="padding: 10px 30px; font-size: 16px; cursor: pointer; margin-left: 10px;">Закрыть</button>
+    </div>
+</body>
+</html>
