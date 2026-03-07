@@ -71,8 +71,17 @@
     <div class="section">
         <h3>Товарный спирт</h3>
         <div class="data-row">
-            <span class="data-label">=   ===> Объем:</span>
+            <span class="data-label">=   ===> Объем (РАСЧЕТ):</span>
             <span class="success" th:text="${#numbers.formatDecimal(outData.commercialAlcohol*100/96, 1, 0)} + ' мл'"></span>
+        </div>
+        <div class="data-row" th:if="${hasActualData}">
+            <span class="data-label">=   ===> Объем (ФАКТ):</span>
+            <span class="success" th:text="${#numbers.formatDecimal(actualCommercialAlcohol, 1, 0)} + ' мл'"></span>
+        </div>
+        <div class="data-row" th:if="${hasActualData}">
+            <span class="data-label">=   ===> Отклонение:</span>
+            <span th:class="${actualCommercialAlcohol - calcCommercialAlcohol >= 0} ? 'success' : 'danger'"
+                  th:text="${#numbers.formatDecimal(actualCommercialAlcohol - calcCommercialAlcohol, 1, 0)} + ' мл'"></span>
         </div>
         <div class="data-row">
             <span class="data-label">Скорость отбора:</span>
@@ -95,8 +104,30 @@
             <span class="success" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
         </div>
         <div class="data-row">
-            <span class="data-label">Хвосты (ВЫЛИТЬ):</span>
+            <span class="data-label">Головы (РАСЧЕТ):</span>
+            <span th:text="${#numbers.formatDecimal(outData.heads*100/96, 1, 0)} + ' мл'"></span>
+        </div>
+        <div class="data-row" th:if="${hasActualData}">
+            <span class="data-label">Головы (ФАКТ):</span>
+            <span th:text="${#numbers.formatDecimal(actualHeads, 1, 0)} + ' мл'"></span>
+        </div>
+        <div class="data-row" th:if="${hasActualData}">
+            <span class="data-label">Головы (ОТКЛОНЕНИЕ):</span>
+            <span th:class="${actualHeads - calcHeads >= 0} ? 'success' : 'danger'"
+                  th:text="${#numbers.formatDecimal(actualHeads - calcHeads, 1, 0)} + ' мл'"></span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">Хвосты (РАСЧЕТ):</span>
             <span class="danger" th:text="${outData.tails} + ' мл'"></span>
+        </div>
+        <div class="data-row" th:if="${hasActualData}">
+            <span class="data-label">Хвосты (ФАКТ):</span>
+            <span class="danger" th:text="${#numbers.formatDecimal(actualTails, 1, 0)} + ' мл'"></span>
+        </div>
+        <div class="data-row" th:if="${hasActualData}">
+            <span class="data-label">Хвосты (ОТКЛОНЕНИЕ):</span>
+            <span th:class="${actualTails - calcTails >= 0} ? 'success' : 'danger'"
+                  th:text="${#numbers.formatDecimal(actualTails - calcTails, 1, 0)} + ' мл'"></span>
         </div>
         <div class="data-row">
             <span class="data-label">Отбор до:</span>

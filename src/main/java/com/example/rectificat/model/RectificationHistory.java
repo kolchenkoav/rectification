@@ -31,6 +31,16 @@ public class RectificationHistory {
     @Column(name = "water")
     private int water;
 
+    // Фактические показатели
+    @Column(name = "actual_commercial_alcohol")
+    private Double actualCommercialAlcohol;
+
+    @Column(name = "actual_heads")
+    private Double actualHeads;
+
+    @Column(name = "actual_tails")
+    private Double actualTails;
+
     @Column(name = "calculation_date")
     private LocalDateTime calculationDate = LocalDateTime.now();
 
@@ -43,6 +53,17 @@ public class RectificationHistory {
         this.power = power;
         this.water = water;
         this.calculationDate = LocalDateTime.now();
+    }
+
+    // Методы для установки фактических показателей
+    public void setActualData(Double actualCommercialAlcohol, Double actualHeads, Double actualTails) {
+        this.actualCommercialAlcohol = actualCommercialAlcohol;
+        this.actualHeads = actualHeads;
+        this.actualTails = actualTails;
+    }
+
+    public boolean hasActualData() {
+        return actualCommercialAlcohol != null || actualHeads != null || actualTails != null;
     }
 
     public void addDetail(Detail detail) {

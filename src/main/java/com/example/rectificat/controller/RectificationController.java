@@ -80,6 +80,12 @@ public class RectificationController {
             model.addAttribute("outData", out);
             model.addAttribute("details", details);
             model.addAttribute("historyId", id);
+
+            // Фактические данные
+            model.addAttribute("actualCommercialAlcohol", history.getActualCommercialAlcohol());
+            model.addAttribute("actualHeads", history.getActualHeads());
+            model.addAttribute("actualTails", history.getActualTails());
+            model.addAttribute("hasActualData", history.hasActualData());
         });
         return "OutData";
     }
@@ -99,6 +105,17 @@ public class RectificationController {
             model.addAttribute("inData", data);
             model.addAttribute("outData", out);
             model.addAttribute("details", details);
+
+            // Фактические данные и рассчитанные значения для отклонений
+            model.addAttribute("actualCommercialAlcohol", history.getActualCommercialAlcohol());
+            model.addAttribute("actualHeads", history.getActualHeads());
+            model.addAttribute("actualTails", history.getActualTails());
+            model.addAttribute("hasActualData", history.hasActualData());
+
+            // Рассчитанные значения для вычисления отклонений
+            model.addAttribute("calcCommercialAlcohol", out.getCommercialAlcohol() * 100 / 96);
+            model.addAttribute("calcHeads", out.getHeads() * 100 / 96);
+            model.addAttribute("calcTails", out.getTails());
         });
         return "Print";
     }
@@ -122,6 +139,19 @@ public class RectificationController {
     public String deleteDetail(@PathVariable Long historyId, @PathVariable Long detailId) {
         detailRepository.deleteById(detailId);
         return "redirect:/view/" + historyId;
+    }
+
+    @PostMapping("/view/{id}/actual")
+    public String saveActualData(@PathVariable Long id,
+                                  @RequestParam Double actualCommercialAlcohol,
+                                  @RequestParam Double actualHeads,
+                                  @RequestParam Double actualTails) {
+        historyRepository.findById(id).ifPresent(history -> {
+            history.setActualData(actualCommercialAlcohol, actualHeads, actualTails);
+            historyRepository.save(history);
+            log.info("Сохранены фактические показатели для расчета {}", id);
+        });
+        return "redirect:/view/" + id;
     }
 
     @PostMapping("/info")

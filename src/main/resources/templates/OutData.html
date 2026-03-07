@@ -89,6 +89,44 @@
                         </div>
                     </div>
 
+                    <!-- Форма ввода фактических показателей -->
+                    <div class="mt-4 p-3 bg-warning bg-opacity-10 rounded border border-warning" th:if="${historyId != null}">
+                        <h5 class="section-title text-warning">Фактические показатели</h5>
+                        <form th:action="@{'/view/' + ${historyId} + '/actual'}" method="post" class="row g-3">
+                            <div class="col-12">
+                                <small class="text-muted d-block mb-2">Введите фактические значения после завершения ректификации:</small>
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label small">Товарный спирт (мл)</label>
+                                <input type="number" step="1" class="form-control form-control-sm"
+                                       name="actualCommercialAlcohol"
+                                       th:value="${actualCommercialAlcohol}"
+                                       placeholder="Факт ТС">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label small">Головы (мл)</label>
+                                <input type="number" step="1" class="form-control form-control-sm"
+                                       name="actualHeads"
+                                       th:value="${actualHeads}"
+                                       placeholder="Факт головы">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label small">Хвосты (мл)</label>
+                                <input type="number" step="1" class="form-control form-control-sm"
+                                       name="actualTails"
+                                       th:value="${actualTails}"
+                                       placeholder="Факт хвосты">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-sm btn-warning">
+                                    <span th:if="${hasActualData}">Обновить факт</span>
+                                    <span th:unless="${hasActualData}">Сохранить факт</span>
+                                </button>
+                                <span class="ms-2 text-success small" th:if="${hasActualData}">✓ Сохранено</span>
+                            </div>
+                        </form>
+                    </div>
+
                     <div class="mt-4">
                         <h5 class="section-title">Остатки и хвосты</h5>
                         <div class="info-row">
