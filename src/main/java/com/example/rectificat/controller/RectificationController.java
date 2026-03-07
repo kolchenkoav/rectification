@@ -114,8 +114,8 @@ public class RectificationController {
 
             // Рассчитанные значения для вычисления отклонений
             model.addAttribute("calcCommercialAlcohol", out.getCommercialAlcohol() * 100 / 96);
-            model.addAttribute("calcHeads", out.getHeads() * 100 / 96);
-            model.addAttribute("calcTails", out.getTails());
+            model.addAttribute("calcHeads", out.getHeads() * 100 / 96 + data.getWater());  // Головы + вода (НА РОЗЖИГ)
+            model.addAttribute("calcTails", out.getAbsoluteAlcohol() - out.getCommercialAlcohol() - out.getHeadFactions() - out.getTails());  // АС (ОБОРОТ)
         });
         return "Print";
     }
