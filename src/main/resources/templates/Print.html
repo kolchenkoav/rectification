@@ -55,16 +55,16 @@
             <span th:text="${#numbers.formatDecimal(outData.heads*100/96, 1, 0)} + ' мл'"></span>
         </div>
         <div class="data-row">
-            <span class="data-label">Головы + вода (НА РОЗЖИГ):</span>
-            <span class="danger" th:text="${#numbers.formatDecimal(outData.heads*100/96 + inData.water, 1, 0)} + ' мл'"></span>
+            <span class="data-label">===> Головы + вода (НА РОЗЖИГ):</span>
+            <span class="highlight" th:text="${#numbers.formatDecimal(outData.heads*100/96 + inData.water, 1, 0)} + ' мл'"></span>
         </div>
         <div class="data-row">
             <span class="data-label">Скорость (1/3 объема):</span>
             <span th:text="${#numbers.formatDecimal((outData.heads*100/96 + inData.water)/3, 1, 0)} + ' мл (1-3 к/с)'"></span>
         </div>
         <div class="data-row">
-            <span class="data-label">Головы + ТС (ОБОРОТ):</span>
-            <span th:text="${#numbers.formatDecimal(outData.headsAndCommercialAlcohol*100/96, 1, 0)} + ' мл (4 к/с)'"></span>
+            <span class="data-label">===> Головы + ТС (ОБОРОТ):</span>
+            <span class="highlight" th:text="${#numbers.formatDecimal(outData.headsAndCommercialAlcohol*100/96, 1, 0)} + ' мл (4 к/с)'"></span>
         </div>
     </div>
 
