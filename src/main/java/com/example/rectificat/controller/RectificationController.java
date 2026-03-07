@@ -8,6 +8,7 @@ import com.example.rectificat.repository.DetailRepository;
 import com.example.rectificat.repository.RectificationHistoryRepository;
 import com.example.rectificat.services.RectificationService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public class RectificationController {
     private final RectificationService service;
     private final RectificationHistoryRepository historyRepository;
     private final DetailRepository detailRepository;
+    private final Environment environment;
 
     InData inData;
     OutData outData;
@@ -27,10 +29,12 @@ public class RectificationController {
 
     public RectificationController(RectificationService service,
                                    RectificationHistoryRepository historyRepository,
-                                   DetailRepository detailRepository) {
+                                   DetailRepository detailRepository,
+                                   Environment environment) {
         this.service = service;
         this.historyRepository = historyRepository;
         this.detailRepository = detailRepository;
+        this.environment = environment;
         inData = new InData(19, 40, 0.6, 25);
         outData = new OutData();
     }
@@ -38,6 +42,8 @@ public class RectificationController {
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("history", historyRepository.findAllByOrderByCalculationDateDesc());
+        model.addAttribute("appVersion", environment.getProperty("app.version", "0.0.1"));
+        model.addAttribute("appTag", environment.getProperty("app.tag", "SNAPSHOT"));
         return "History";
     }
 
