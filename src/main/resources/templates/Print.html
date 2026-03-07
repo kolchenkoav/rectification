@@ -76,9 +76,9 @@
         <h3>Товарный спирт</h3>
         <div class="data-row" th:classappend="${hasActualData} ? 'actual-row'">
             <span class="data-label">=   ===> Объем:</span>
-            <span class="success" th:text="${#numbers.formatDecimal(outData.commercialAlcohol*100/96, 1, 0)} + ' мл'"></span>
-            <span th:if="${hasActualData}" class="success" th:text="${' ФАКТ: ' + #numbers.formatDecimal(actualCommercialAlcohol, 1, 0) + ' мл'}"></span>
-            <span th:if="${hasActualData}" th:class="${actualCommercialAlcohol - calcCommercialAlcohol >= 0} ? 'success' : 'danger'" th:text="${' ОТКЛОНЕНИЕ: ' + #numbers.formatDecimal(actualCommercialAlcohol - calcCommercialAlcohol, 1, 0) + ' мл'}"></span>
+            <span class="actual-value" th:text="${#numbers.formatDecimal(outData.commercialAlcohol*100/96, 1, 0)} + ' мл'"></span>
+            <span th:if="${hasActualData}" class="actual-value" th:text="${' ФАКТ: ' + #numbers.formatDecimal(actualCommercialAlcohol, 1, 0) + ' мл'}"></span>
+            <span th:if="${hasActualData}" th:class="${actualCommercialAlcohol - calcCommercialAlcohol >= 0} ? 'actual-value positive' : 'actual-value negative'" th:text="${' ОТКЛОНЕНИЕ: ' + #numbers.formatDecimal(actualCommercialAlcohol - calcCommercialAlcohol, 1, 0) + ' мл'}"></span>
         </div>
         <div class="data-row">
             <span class="data-label">Скорость отбора:</span>
@@ -98,19 +98,19 @@
         </div>
         <div class="data-row">
             <span class="data-label">   ===> АС (ОБОРОТ):</span>
-            <span class="success" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
+            <span class="actual-value" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
         </div>
         <div class="data-row" th:classappend="${hasActualData} ? 'actual-row'">
             <span class="data-label">Головы + вода (НА РОЗЖИГ):</span>
-            <span th:text="${#numbers.formatDecimal(outData.heads*100/96 + inData.water, 1, 0)} + ' мл'"></span>
-            <span th:if="${hasActualData}" th:text="${' ФАКТ: ' + #numbers.formatDecimal(actualHeads, 1, 0) + ' мл'}"></span>
-            <span th:if="${hasActualData}" th:class="${actualHeads - calcHeads >= 0} ? 'success' : 'danger'" th:text="${' ОТКЛОНЕНИЕ: ' + #numbers.formatDecimal(actualHeads - calcHeads, 1, 0) + ' мл'}"></span>
+            <span class="actual-value" th:text="${#numbers.formatDecimal(outData.heads*100/96 + inData.water, 1, 0)} + ' мл'"></span>
+            <span th:if="${hasActualData}" class="actual-value" th:text="${' ФАКТ: ' + #numbers.formatDecimal(actualHeads, 1, 0) + ' мл'}"></span>
+            <span th:if="${hasActualData}" th:class="${actualHeads - calcHeads >= 0} ? 'actual-value positive' : 'actual-value negative'" th:text="${' ОТКЛОНЕНИЕ: ' + #numbers.formatDecimal(actualHeads - calcHeads, 1, 0) + ' мл'}"></span>
         </div>
         <div class="data-row" th:classappend="${hasActualData} ? 'actual-row'">
             <span class="data-label">АС (ОБОРОТ):</span>
-            <span class="danger" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
-            <span th:if="${hasActualData}" th:text="${' ФАКТ: ' + #numbers.formatDecimal(actualTails, 1, 0) + ' мл'}"></span>
-            <span th:if="${hasActualData}" th:class="${actualTails - calcTails >= 0} ? 'success' : 'danger'" th:text="${' ОТКЛОНЕНИЕ: ' + #numbers.formatDecimal(actualTails - calcTails, 1, 0) + ' мл'}"></span>
+            <span class="actual-value" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
+            <span th:if="${hasActualData}" class="actual-value" th:text="${' ФАКТ: ' + #numbers.formatDecimal(actualTails, 1, 0) + ' мл'}"></span>
+            <span th:if="${hasActualData}" th:class="${actualTails - calcTails >= 0} ? 'actual-value positive' : 'actual-value negative'" th:text="${' ОТКЛОНЕНИЕ: ' + #numbers.formatDecimal(actualTails - calcTails, 1, 0) + ' мл'}"></span>
         </div>
         <div class="data-row">
             <span class="data-label">Отбор до:</span>
