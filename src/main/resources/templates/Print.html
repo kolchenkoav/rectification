@@ -48,30 +48,30 @@
         <h3>Результаты расчета</h3>
         <div class="data-row">
             <span class="data-label">Абсолютный спирт (АС):</span>
-            <span class="highlight" th:text="${outData.absoluteAlcohol} + ' мл'"></span>
+            <span th:text="${outData.absoluteAlcohol} + ' мл'"></span>
         </div>
         <div class="data-row">
             <span class="data-label">Головы (96%):</span>
             <span th:text="${#numbers.formatDecimal(outData.heads*100/96, 1, 0)} + ' мл'"></span>
         </div>
         <div class="data-row">
-            <span class="data-label">===> Головы + вода (НА РОЗЖИГ):</span>
-            <span class="highlight" th:text="${#numbers.formatDecimal(outData.heads*100/96 + inData.water, 1, 0)} + ' мл'"></span>
+            <span class="data-label">   ===> Головы + вода (НА РОЗЖИГ):</span>
+            <span class="success" th:text="${#numbers.formatDecimal(outData.heads*100/96 + inData.water, 1, 0)} + ' мл'"></span>
         </div>
         <div class="data-row">
             <span class="data-label">Скорость (1/3 объема):</span>
             <span th:text="${#numbers.formatDecimal((outData.heads*100/96 + inData.water)/3, 1, 0)} + ' мл (1-3 к/с)'"></span>
         </div>
         <div class="data-row">
-            <span class="data-label">===> Головы + ТС (ОБОРОТ):</span>
-            <span class="highlight" th:text="${#numbers.formatDecimal(outData.headsAndCommercialAlcohol*100/96, 1, 0)} + ' мл (4 к/с)'"></span>
+            <span class="data-label">   ===> Головы + ТС (ОБОРОТ):</span>
+            <span class="success" th:text="${#numbers.formatDecimal(outData.headsAndCommercialAlcohol*100/96, 1, 0)} + ' мл (4 к/с)'"></span>
         </div>
     </div>
 
     <div class="section">
         <h3>Товарный спирт</h3>
         <div class="data-row">
-            <span class="data-label">Объем:</span>
+            <span class="data-label">=   ===> Объем:</span>
             <span class="success" th:text="${#numbers.formatDecimal(outData.commercialAlcohol*100/96, 1, 0)} + ' мл'"></span>
         </div>
         <div class="data-row">
@@ -91,8 +91,8 @@
             <span th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions} + ' мл АС'"></span>
         </div>
         <div class="data-row">
-            <span class="data-label">АС (ОБОРОТ):</span>
-            <span class="highlight" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
+            <span class="data-label">   ===> АС (ОБОРОТ):</span>
+            <span class="success" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
         </div>
         <div class="data-row">
             <span class="data-label">Хвосты (ВЫЛИТЬ):</span>
