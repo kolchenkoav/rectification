@@ -122,6 +122,9 @@ public class RectificationController {
             model.addAttribute("calcCommercialAlcohol", out.getCommercialAlcohol() * 100 / 96);
             model.addAttribute("calcHeads", out.getHeads() * 100 / 96 + data.getWater());  // Головы + вода (НА РОЗЖИГ)
             model.addAttribute("calcTails", out.getAbsoluteAlcohol() - out.getCommercialAlcohol() - out.getHeadFactions() - out.getTails());  // АС (ОБОРОТ)
+
+            // Дата расчета
+            model.addAttribute("calculationDate", history.getCalculationDate());
         });
         return "Print";
     }
