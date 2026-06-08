@@ -1,9 +1,8 @@
 package com.example.rectificat.controller;
 
 import com.example.rectificat.model.InData;
+import com.example.rectificat.model.OutData;
 import com.example.rectificat.model.RectificationHistory;
-import com.example.rectificat.repository.DetailRepository;
-import com.example.rectificat.repository.RectificationHistoryRepository;
 import com.example.rectificat.services.RectificationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,15 +31,9 @@ class RectificationControllerTest {
     @MockBean
     private RectificationService service;
 
-    @MockBean
-    private RectificationHistoryRepository historyRepository;
-
-    @MockBean
-    private DetailRepository detailRepository;
-
     @Test
     void index_shouldReturnHistoryView() throws Exception {
-        when(historyRepository.findAllByOrderByCalculationDateDesc()).thenReturn(Arrays.asList());
+        when(service.getAllHistory()).thenReturn(Arrays.asList());
         
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
@@ -57,7 +52,7 @@ class RectificationControllerTest {
     @Test
     void info_shouldCalculateAndReturnOutDataView() throws Exception {
         // given
-        com.example.rectificat.model.OutData outData = new com.example.rectificat.model.OutData();
+        OutData outData = new OutData();
         outData.setAbsoluteAlcohol(7600);
         outData.setHeadFactions(608);
         outData.setHeads(228);
@@ -68,7 +63,8 @@ class RectificationControllerTest {
         List<String> resultList = Arrays.asList("Результат 1", "Результат 2");
 
         when(service.calc(any(InData.class))).thenReturn(outData);
-        when(service.resultToStringForHtml()).thenReturn(resultList);
+        when(service.resultToStringForHtml(any(InData.class), any(OutData.class))).thenReturn(resultList);
+        when(service.saveCalculation(any(InData.class))).thenReturn(new RectificationHistory(19, 40.0, 0.6, 25));
 
         // when & then
         mockMvc.perform(post("/info")
@@ -86,11 +82,12 @@ class RectificationControllerTest {
     @Test
     void info_shouldPassInDataToService() throws Exception {
         // given
-        com.example.rectificat.model.OutData outData = new com.example.rectificat.model.OutData();
+        OutData outData = new OutData();
         outData.setAbsoluteAlcohol(5000);
 
         when(service.calc(any(InData.class))).thenReturn(outData);
-        when(service.resultToStringForHtml()).thenReturn(Arrays.asList("test"));
+        when(service.resultToStringForHtml(any(InData.class), any(OutData.class))).thenReturn(Arrays.asList("test"));
+        when(service.saveCalculation(any(InData.class))).thenReturn(new RectificationHistory(10, 50.0, 1.0, 100));
 
         // when & then
         mockMvc.perform(post("/info")

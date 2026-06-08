@@ -1,6 +1,6 @@
 package com.example.rectificat.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,7 +52,6 @@ public class RectificationHistory {
         this.alcoholStrength = alcoholStrength;
         this.power = power;
         this.water = water;
-        this.calculationDate = LocalDateTime.now();
     }
 
     // Методы для установки фактических показателей

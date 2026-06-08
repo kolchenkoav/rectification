@@ -16,15 +16,15 @@
 
 ## Технологии
 
-- Java 21
-- Spring Boot 3.1.5
-- Spring Data JPA
+- Java 17+
+- Spring Boot 3.2.5
+- Spring Data JPA (Jakarta EE)
 - PostgreSQL
 - Flyway (миграции)
 - Thymeleaf
 - Bootstrap 5
 - Maven
-- Docker / Docker Compose
+- Docker Compose
 
 ## Быстрый старт
 
@@ -32,13 +32,13 @@
 
 ```bash
 # Запуск всех сервисов
-docker-compose up -d
+docker compose up -d
 
 # Остановка
-docker-compose down
+docker compose down
 ```
 
-Приложение будет доступно по адресу: http://localhost:8089
+Приложение будет доступно по адресу: http://localhost:8099
 
 ### Локальный запуск
 
@@ -55,6 +55,7 @@ cp .env.example .env
 mvn clean package
 mvn spring-boot:run
 ```
+Приложение будет доступно по адресу: http://localhost:8099
 
 ## Настройка .env
 
@@ -112,11 +113,16 @@ cd scripts
 ```bash
 # Запуск всех тестов
 mvn test
+
+# Проверка покрытия кода тестами (JaCoCo)
+mvn clean test
+
+# Отчет о покрытии будет создан в target/site/jacoco/index.html
 ```
 
 ## Использование
 
-1. Откройте http://localhost:8089
+1. Откройте http://localhost:8099
 2. Нажмите "Новый расчёт"
 3. Введите параметры:
    - Количество спирта-сырца (л)

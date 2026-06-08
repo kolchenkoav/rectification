@@ -2,18 +2,34 @@ package com.example.rectificat.services;
 
 import com.example.rectificat.model.InData;
 import com.example.rectificat.model.OutData;
+import com.example.rectificat.model.RectificationHistory;
+import com.example.rectificat.repository.DetailRepository;
+import com.example.rectificat.repository.RectificationHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class RectificationServiceImplTest {
+
+    @Mock
+    private RectificationHistoryRepository historyRepository;
+
+    @Mock
+    private DetailRepository detailRepository;
 
     private RectificationServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new RectificationServiceImpl();
+        service = new RectificationServiceImpl(historyRepository, detailRepository);
     }
 
     @Test
@@ -108,28 +124,58 @@ class RectificationServiceImplTest {
     void resultToString_shouldReturnNonEmptyString() {
         // given
         InData inData = new InData(10, 50.0, 1.0, 100);
-        service.calc(inData);
+        OutData outData = service.calc(inData);
 
         // when
-        StringBuilder result = service.resultToString();
+        String result = service.resultToString(inData, outData);
 
         // then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertTrue(result.toString().contains("Абсолютный спирт"));
+        assertTrue(result.contains("Абсолютный спирт"));
     }
 
     @Test
     void resultToStringForHtml_shouldReturnList() {
         // given
         InData inData = new InData(10, 50.0, 1.0, 100);
-        service.calc(inData);
+        OutData outData = service.calc(inData);
 
         // when
-        var result = service.resultToStringForHtml();
+        var result = service.resultToStringForHtml(inData, outData);
 
         // then
         assertNotNull(result);
         assertTrue(result instanceof java.util.List);
+    }
+
+    @Test
+    void saveCalculation_shouldSaveHistory() {
+        // given
+        InData inData = new InData(10, 50.0, 1.0, 100);
+        RectificationHistory expectedHistory = new RectificationHistory(10, 50.0, 1.0, 100);
+        when(historyRepository.save(any(RectificationHistory.class))).thenReturn(expectedHistory);
+
+        // when
+        RectificationHistory result = service.saveCalculation(inData);
+
+        // then
+        assertNotNull(result);
+        verify(historyRepository, times(1)).save(any(RectificationHistory.class));
+    }
+
+    @Test
+    void getHistoryWithDetails_shouldReturnHistory() {
+        // given
+        Long id = 1L;
+        RectificationHistory history = new RectificationHistory(10, 50.0, 1.0, 100);
+        when(historyRepository.findById(id)).thenReturn(Optional.of(history));
+
+        // when
+        Optional<RectificationHistory> result = service.getHistoryWithDetails(id);
+
+        // then
+        assertTrue(result.isPresent());
+        assertEquals(history, result.get());
     }
 }
