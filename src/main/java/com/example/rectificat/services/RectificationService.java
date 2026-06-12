@@ -16,8 +16,10 @@ public interface RectificationService {
     void deleteHistory(Long id);
     void clearAllHistory();
     Optional<RectificationHistory> getHistoryWithDetails(Long id);
+    boolean historyExists(Long id);
     RectificationHistory saveCalculation(InData inData);
-    void addDetail(Long historyId, Double temperatureCube, Double temperatureTsar, Double temperatureAtmosphere, Double temperatureWater);
-    void deleteDetail(Long detailId);
-    void saveActualData(Long historyId, Double actualCommercialAlcohol, Double actualHeads, Double actualTails);
+
+    boolean addDetail(Long historyId, Double temperatureCube, Double temperatureTsar, Double temperatureAtmosphere, Double temperatureWater);
+    boolean deleteDetail(Long historyId, Long detailId);
+    boolean saveActualData(Long historyId, Double actualCommercialAlcohol, Double actualHeads, Double actualTails);
 }

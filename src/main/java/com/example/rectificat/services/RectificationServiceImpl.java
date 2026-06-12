@@ -101,39 +101,61 @@ public class RectificationServiceImpl implements RectificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public boolean historyExists(Long id) {
+        return historyRepository.existsById(id);
+    }
+
+    @Override
     @Transactional
     public RectificationHistory saveCalculation(InData inData) {
+        OutData outData = calc(inData);
         RectificationHistory history = new RectificationHistory(
                 inData.getAmountOfRawAlcohol(),
                 inData.getAlcoholStrength(),
                 inData.getPower(),
                 inData.getWater()
         );
+        history.setResultSnapshot(outData);
         return historyRepository.save(history);
     }
 
-    @Override
-    @Transactional
-    public void addDetail(Long historyId, Double temperatureCube, Double temperatureTsar, Double temperatureAtmosphere, Double temperatureWater) {
-        historyRepository.findById(historyId).ifPresent(history -> {
-            Detail detail = new Detail(temperatureCube, temperatureTsar, temperatureAtmosphere, temperatureWater);
-            history.addDetail(detail);
-            historyRepository.save(history);
-        });
-    }
 
     @Override
     @Transactional
-    public void deleteDetail(Long detailId) {
-        detailRepository.deleteById(detailId);
+    public boolean addDetail(Long historyId, Double temperatureCube, Double temperatureTsar, Double temperatureAtmosphere, Double temperatureWater) {
+        Optional<RectificationHistory> historyOptional = historyRepository.findById(historyId);
+        if (historyOptional.isEmpty()) {
+            return false;
+        }
+
+        RectificationHistory history = historyOptional.get();
+        Detail detail = new Detail(temperatureCube, temperatureTsar, temperatureAtmosphere, temperatureWater);
+        history.addDetail(detail);
+        historyRepository.save(history);
+        return true;
     }
+
 
     @Override
     @Transactional
-    public void saveActualData(Long historyId, Double actualCommercialAlcohol, Double actualHeads, Double actualTails) {
-        historyRepository.findById(historyId).ifPresent(history -> {
-            history.setActualData(actualCommercialAlcohol, actualHeads, actualTails);
-            historyRepository.save(history);
-        });
+    public boolean deleteDetail(Long historyId, Long detailId) {
+        return detailRepository.deleteByIdAndHistoryId(detailId, historyId) > 0;
     }
+
+
+    @Override
+    @Transactional
+    public boolean saveActualData(Long historyId, Double actualCommercialAlcohol, Double actualHeads, Double actualTails) {
+        Optional<RectificationHistory> historyOptional = historyRepository.findById(historyId);
+        if (historyOptional.isEmpty()) {
+            return false;
+        }
+
+        RectificationHistory history = historyOptional.get();
+        history.setActualData(actualCommercialAlcohol, actualHeads, actualTails);
+        historyRepository.save(history);
+        return true;
+    }
+
 }

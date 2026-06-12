@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface DetailRepository extends JpaRepository<Detail, Long> {
     List<Detail> findByHistoryIdOrderByRecordTimeDesc(Long historyId);
+
+    long deleteByIdAndHistoryId(Long id, Long historyId);
 }
