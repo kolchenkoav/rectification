@@ -1,151 +1,165 @@
-
-
+# Rectification
 
 ![Rectification](Rectification.png "Rectification")
 
+Веб-приложение для расчёта параметров ректификации спирта-сырца: абсолютного спирта, головных фракций, товарного спирта и хвостов. Включает историю расчётов, температурные замеры и печать протокола.
+
 ## Возможности
 
-- Расчёт абсолютного спирта из спирта-сырца
-- Расчёт головных фракций и голов
-- Расчёт товарного спирта
-- Расчёт хвостов
-- **История расчётов** с сохранением в PostgreSQL
-- **Температурные замеры** в процессе ректификации
-- **Печать протокола** ректификации
-- Современный адаптивный интерфейс (Bootstrap 5)
+- Расчёт абсолютного спирта, головных фракций, товарного спирта и хвостов
+- Сохранение расчётов в PostgreSQL с историей
+- Температурные замеры (куб, царга, атмосфера, вода) в процессе ректификации
+- Фактические показатели для сравнения с расчётными
+- Печать протокола ректификации
+- Форма ввода с серверной валидацией
+- Адаптивный интерфейс (Bootstrap 5)
+- Аутентификация через Spring Security (form login, CSRF)
 
-## Технологии
+## Стек технологий
 
-- Java 17+
-- Spring Boot 3.2.5
-- Spring Data JPA (Jakarta EE)
-- PostgreSQL
-- Flyway (миграции)
-- Thymeleaf
-- Spring Security (form login, CSRF)
-- Bootstrap 5
-- Maven
-- Docker Compose
-
+| Компонент | Технология |
+|-----------|-----------|
+| Язык | Java 17 |
+| Фреймворк | Spring Boot 3.2.5 |
+| ORM | Spring Data JPA (Jakarta EE) |
+| БД | PostgreSQL 15 |
+| Миграции | Flyway |
+| Шаблонизатор | Thymeleaf |
+| Безопасность | Spring Security |
+| CSS | Bootstrap 5 |
+| Сборка | Maven |
+| Контейнеризация | Docker Compose |
+| Тестирование | JUnit 5, Mockito, JaCoCo |
 
 ## Быстрый старт
 
-### С использованием Docker Compose (local-only/dev)
-
+### Docker Compose (рекомендуется)
 
 ```bash
-# Запуск всех сервисов
+cp .env.example .env
 docker compose up -d
-
-# Остановка
-docker compose down
 ```
 
-Приложение Docker Compose будет доступно по адресу: http://localhost:8089
+Приложение: http://localhost:8089
 
-Этот Docker Compose-файл предназначен только для локальной разработки: порт приложения опубликован как `127.0.0.1:8089:8080`, порт PostgreSQL — как `127.0.0.1:5432:5432`, поэтому сервисы не слушают внешние интерфейсы хоста.
+> Docker Compose привязан к `127.0.0.1` — сервисы не доступны с внешних интерфейсов.
 
 ### Локальный запуск
 
-
-1. Создайте файл `.env` на основе примера:
 ```bash
 cp .env.example .env
-# Отредактируйте .env при необходимости
-```
+# Убедитесь, что PostgreSQL запущен и доступен
 
-2. Запустите PostgreSQL (или используйте Docker)
-
-3. Сборка и запуск:
-```bash
 mvn clean package
 mvn spring-boot:run
 ```
-Приложение будет доступно по адресу: http://localhost:8099
 
-## Настройка .env
+Приложение: http://localhost:8099
 
-```env
-# PostgreSQL
-POSTGRES_DB=rectification_db
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=password
-POSTGRES_HOST=rectification-db
-POSTGRES_PORT=5432
+## Конфигурация
 
-# Spring Boot
-SPRING_DATASOURCE_URL=jdbc:postgresql://rectification-db:5432/rectification_db
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=password
-SPRING_FLYWAY_REPAIR_ON_MIGRATE=true
-```
+Все настройки задаются через переменные окружения или файл `.env`:
 
-## Безопасность
-
-Приложение защищено Spring Security: страницы приложения и все изменяющие POST-запросы требуют аутентификации через стандартный form login/logout, CSRF-защита включена и не отключается глобально. Статические ресурсы остаются доступными без входа.
-
-Не коммитьте реальные пароли или секреты. Для локальной разработки можно использовать сгенерированный Spring Boot dev password (пользователь `user`, пароль выводится в логах при старте) или задать учетные данные штатными настройками Spring Security через env/config, например `SPRING_SECURITY_USER_NAME` и `SPRING_SECURITY_USER_PASSWORD`.
-
-Текущие Docker Compose и `.env` примеры предназначены только для локальной разработки: приложение и PostgreSQL в Compose привязаны к `127.0.0.1`. Полное усиление настроек БД, учетных данных и портов выполняется отдельной задачей.
-
+| Переменная | Описание | По умолчанию |
+|-----------|----------|-------------|
+| `SPRING_DATASOURCE_URL` | JDBC URL PostgreSQL | `jdbc:postgresql://localhost:5432/rectification_db` |
+| `SPRING_DATASOURCE_USERNAME` | Пользователь БД | `postgres` |
+| `SPRING_DATASOURCE_PASSWORD` | Пароль БД | `password` |
+| `SPRING_JPA_HIBERNATE_DDL_AUTO` | Режим DDL | `validate` |
+| `APP_VERSION` | Версия приложения | `0.0.1` |
+| `APP_TAG` | Тег сборки | `SNAPSHOT` |
 
 ## Структура проекта
 
-
 ```
-src/main/
-├── java/com/example/rectificat/
-│   ├── controller/      # HTTP-контроллеры
-│   ├── model/           # Сущности JPA
-│   ├── repository/      # Репозитории
-│   ├── services/        # Бизнес-логика
-│   └── RectificationApplication.java
-└── resources/
-    ├── application.yml
-    ├── db/migration/    # Flyway миграции
-    └── templates/       # HTML-шаблоны Thymeleaf
+src/main/java/com/example/rectification/
+├── config/
+│   ├── SecurityConfiguration.java      # Spring Security
+│   └── GlobalExceptionHandler.java     # Обработка ошибок
+├── controller/
+│   └── RectificationController.java    # HTTP-эндпоинты
+├── model/
+│   ├── InData.java                     # DTO входных данных
+│   ├── OutData.java                    # DTO результатов расчёта
+│   ├── RectificationHistory.java       # Сущность истории расчётов
+│   └── Detail.java                     # Сущность температурных замеров
+├── repository/
+│   ├── RectificationHistoryRepository.java
+│   └── DetailRepository.java
+├── services/
+│   ├── RectificationService.java       # Интерфейс сервиса
+│   ├── RectificationServiceImpl.java   # Реализация (CRUD)
+│   ├── RectificationCalculator.java    # Расчётная логика
+│   └── RectificationConstants.java     # Константы фракций
+└── RectificationApplication.java       # Точка входа
+
+src/main/resources/
+├── application.yml
+├── messages.properties                 # Сообщения валидации
+├── db/migration/                       # SQL-миграции Flyway (V1–V6)
+├── templates/                          # Шаблоны Thymeleaf
+│   ├── InData.html                     # Форма ввода
+│   ├── OutData.html                    # Результаты расчёта
+│   ├── History.html                    # Список расчётов
+│   ├── Print.html                      # Печатный протокол
+│   └── error.html                      # Страница ошибки
+└── static/
+    └── grafik.png
 ```
 
-## Скрипты
+## Эндпоинты
 
-### Бэкап базы данных
-
-```powershell
-cd scripts
-.\backup.ps1
-```
-
-Бэкапы сохраняются в `scripts/backups/`. Автоматически удаляются бэкапы старше 30 дней.
-
-### Восстановление из бэкапа
-
-```powershell
-cd scripts
-.\restore.ps1
-```
+| Метод | Путь | Описание |
+|-------|------|----------|
+| GET | `/` | Список расчётов (история) |
+| GET | `/new` | Форма нового расчёта |
+| POST | `/info` | Выполнить расчёт и сохранить |
+| GET | `/view/{id}` | Просмотр расчёта с замерами |
+| GET | `/print/{id}` | Печатный протокол |
+| POST | `/view/{id}/detail` | Добавить температурный замер |
+| POST | `/view/{id}/detail/{detailId}/delete` | Удалить замер |
+| POST | `/view/{id}/actual` | Сохранить фактические показатели |
+| POST | `/delete/{id}` | Удалить расчёт |
+| POST | `/clear` | Очистить всю историю |
 
 ## Тестирование
 
 ```bash
-# Запуск всех тестов
+# Запуск тестов
 mvn test
 
-# Проверка покрытия кода тестами (JaCoCo)
+# Полная сборка с тестами и отчётом покрытия
 mvn clean test
-
-# Отчет о покрытии будет создан в target/site/jacoco/index.html
 ```
 
-## Использование
+Отчёт JaCoCo: `target/site/jacoco/index.html`
 
-1. Откройте http://localhost:8099 и войдите через стандартную форму Spring Security
-2. Нажмите "Новый расчёт"
+Минимальное покрытие: **80%** строк и ветвлений (настраивается в `pom.xml`).
 
-3. Введите параметры:
-   - Количество спирта-сырца (л)
-   - Крепость спирта (%)
-   - Мощность (кВт)
-   - Вода в узле отбора (мл)
-4. Нажмите "Рассчитать"
-5. Просмотрите результаты и добавьте температурные замеры
-6. Распечатайте протокол при необходимости
+## Безопасность
+
+- Все страницы и POST-запросы требуют аутентификации
+- Статические ресурсы доступны без входа
+- CSRF-защита включена
+- Для локальной разработки: пользователь `user`, пароль выводится в логах при старте
+- Или задайте через env: `SPRING_SECURITY_USER_NAME`, `SPRING_SECURITY_USER_PASSWORD`
+
+> Не коммитьте реальные пароли и секреты.
+
+## Скрипты резервного копирования
+
+```powershell
+# Бэкап
+cd scripts
+.\backup.ps1
+
+# Восстановление
+cd scripts
+.\restore.ps1
+```
+
+Бэкапы: `scripts/backups/` (автоочистка старше 30 дней).
+
+## Лицензия
+
+Лицензия отсутствует. Используйте по своему усмотрению.
