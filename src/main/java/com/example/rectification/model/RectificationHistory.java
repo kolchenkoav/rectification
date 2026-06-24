@@ -1,15 +1,12 @@
-package com.example.rectificat.model;
+package com.example.rectification.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.example.rectification.services.RectificationConstants;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,32 +17,21 @@ import java.util.List;
 @Entity
 @Table(name = "rectification_history")
 public class RectificationHistory {
-    private static final double HEAD_FRACTION = 0.08;
-    private static final double HEADS_AND_COMMERCIAL_FRACTION = 0.05;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(name = "amount_of_raw_alcohol", nullable = false)
-    @Min(value = 1, message = "Спирт-сырец должен быть не меньше 1 л")
-    @Max(value = 1000, message = "Спирт-сырец должен быть не больше 1000 л")
     private int amountOfRawAlcohol;
 
     @Column(name = "alcohol_strength", nullable = false)
-    @DecimalMin(value = "0.1", message = "Крепость должна быть не меньше 0.1%")
-    @DecimalMax(value = "100.0", message = "Крепость не может быть больше 100%")
     private double alcoholStrength;
 
     @Column(name = "power", nullable = false)
-    @DecimalMin(value = "0.1", message = "Мощность должна быть не меньше 0.1 кВт")
-    @DecimalMax(value = "100.0", message = "Мощность должна быть не больше 100 кВт")
     private double power;
 
     @Column(name = "water", nullable = false)
-    @Min(value = 0, message = "Вода может быть 0 мл или больше")
-    @Max(value = 10000, message = "Вода должна быть не больше 10000 мл")
     private int water;
 
     // Immutable result snapshot persisted in V2 columns.
@@ -98,10 +84,10 @@ public class RectificationHistory {
     public OutData toOutData() {
         OutData outData = new OutData();
         outData.setAbsoluteAlcohol(absoluteAlcohol);
-        outData.setHeadFactions((int) (absoluteAlcohol * HEAD_FRACTION));
+        outData.setHeadFractions((int) (absoluteAlcohol * RectificationConstants.HEAD_FRACTION));
         outData.setHeads(heads);
         outData.setTails(tails);
-        outData.setHeadsAndCommercialAlcohol((int) (absoluteAlcohol * HEADS_AND_COMMERCIAL_FRACTION));
+        outData.setHeadsAndCommercialAlcohol((int) (absoluteAlcohol * RectificationConstants.HEADS_AND_COMMERCIAL_FRACTION));
         outData.setCommercialAlcohol(commercialAlcohol);
         return outData;
     }

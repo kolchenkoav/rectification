@@ -1,10 +1,10 @@
-package com.example.rectificat.services;
+package com.example.rectification.services;
 
-import com.example.rectificat.model.InData;
-import com.example.rectificat.model.OutData;
-import com.example.rectificat.model.RectificationHistory;
-import com.example.rectificat.repository.DetailRepository;
-import com.example.rectificat.repository.RectificationHistoryRepository;
+import com.example.rectification.model.InData;
+import com.example.rectification.model.OutData;
+import com.example.rectification.model.RectificationHistory;
+import com.example.rectification.repository.DetailRepository;
+import com.example.rectification.repository.RectificationHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ class RectificationServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new RectificationServiceImpl(historyRepository, detailRepository);
+        service = new RectificationServiceImpl(historyRepository, detailRepository, new RectificationCalculator());
     }
 
     @Test
@@ -45,7 +45,7 @@ class RectificationServiceImplTest {
     }
 
     @Test
-    void calc_shouldCalculateHeadFactions() {
+    void calc_shouldCalculateHeadFractions() {
         // given
         InData inData = new InData(19, 40.0, 0.6, 25);
 
@@ -53,7 +53,7 @@ class RectificationServiceImplTest {
         OutData result = service.calc(inData);
 
         // then: головные фракции = 7600 * 0.08 = 608
-        assertEquals(608, result.getHeadFactions());
+        assertEquals(608, result.getHeadFractions());
     }
 
     @Test
@@ -114,39 +114,10 @@ class RectificationServiceImplTest {
 
         // then: все значения должны быть 0
         assertEquals(0, result.getAbsoluteAlcohol());
-        assertEquals(0, result.getHeadFactions());
+        assertEquals(0, result.getHeadFractions());
         assertEquals(0, result.getHeads());
         assertEquals(0, result.getCommercialAlcohol());
         assertEquals(0, result.getTails());
-    }
-
-    @Test
-    void resultToString_shouldReturnNonEmptyString() {
-        // given
-        InData inData = new InData(10, 50.0, 1.0, 100);
-        OutData outData = service.calc(inData);
-
-        // when
-        String result = service.resultToString(inData, outData);
-
-        // then
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        assertTrue(result.contains("Абсолютный спирт"));
-    }
-
-    @Test
-    void resultToStringForHtml_shouldReturnList() {
-        // given
-        InData inData = new InData(10, 50.0, 1.0, 100);
-        OutData outData = service.calc(inData);
-
-        // when
-        var result = service.resultToStringForHtml(inData, outData);
-
-        // then
-        assertNotNull(result);
-        assertTrue(result instanceof java.util.List);
     }
 
     @Test

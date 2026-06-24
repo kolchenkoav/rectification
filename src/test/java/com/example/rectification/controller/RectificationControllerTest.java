@@ -1,11 +1,11 @@
-package com.example.rectificat.controller;
+package com.example.rectification.controller;
 
-import com.example.rectificat.SecurityConfiguration;
-import com.example.rectificat.model.Detail;
-import com.example.rectificat.model.InData;
-import com.example.rectificat.model.OutData;
-import com.example.rectificat.model.RectificationHistory;
-import com.example.rectificat.services.RectificationService;
+import com.example.rectification.config.SecurityConfiguration;
+import com.example.rectification.model.Detail;
+import com.example.rectification.model.InData;
+import com.example.rectification.model.OutData;
+import com.example.rectification.model.RectificationHistory;
+import com.example.rectification.services.RectificationService;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.RequestDispatcher;
 import org.junit.jupiter.api.Test;
@@ -231,7 +231,7 @@ class RectificationControllerTest {
     private static OutData sampleOutData() {
         OutData outData = new OutData();
         outData.setAbsoluteAlcohol(7600);
-        outData.setHeadFactions(608);
+        outData.setHeadFractions(608);
         outData.setHeads(228);
         outData.setCommercialAlcohol(4940);
         outData.setTails(266);
@@ -564,17 +564,14 @@ class RectificationControllerTest {
         // given
         OutData outData = new OutData();
         outData.setAbsoluteAlcohol(7600);
-        outData.setHeadFactions(608);
+        outData.setHeadFractions(608);
         outData.setHeads(228);
         outData.setCommercialAlcohol(4940);
         outData.setTails(266);
         outData.setHeadsAndCommercialAlcohol(380);
 
-        List<String> resultList = Arrays.asList("Результат 1", "Результат 2");
-
         RectificationHistory savedHistory = new RectificationHistory(19, 40.0, 0.6, 25);
         savedHistory.setResultSnapshot(outData);
-        when(service.resultToStringForHtml(any(InData.class), any(OutData.class))).thenReturn(resultList);
         when(service.saveCalculation(any(InData.class))).thenReturn(savedHistory);
 
         // when & then
@@ -582,7 +579,6 @@ class RectificationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("OutData"))
                 .andExpect(model().attributeExists("outData"))
-                .andExpect(model().attributeExists("result"))
                 .andReturn();
 
         OutData modelOutData = (OutData) result.getModelAndView().getModel().get("outData");
@@ -600,7 +596,6 @@ class RectificationControllerTest {
 
         RectificationHistory savedHistory = new RectificationHistory(10, 50.0, 1.0, 100);
         savedHistory.setResultSnapshot(outData);
-        when(service.resultToStringForHtml(any(InData.class), any(OutData.class))).thenReturn(Arrays.asList("test"));
         when(service.saveCalculation(any(InData.class))).thenReturn(savedHistory);
 
         // when & then
@@ -667,7 +662,6 @@ class RectificationControllerTest {
 
         RectificationHistory savedHistory = new RectificationHistory(1000, 0.1, 0.1, 10000);
         savedHistory.setResultSnapshot(outData);
-        when(service.resultToStringForHtml(any(InData.class), any(OutData.class))).thenReturn(Arrays.asList("test"));
         when(service.saveCalculation(any(InData.class))).thenReturn(savedHistory);
 
         mockMvc.perform(postInfoRequest("1000", "0.1", "0.1", "10000").with(csrf()))
@@ -686,7 +680,6 @@ class RectificationControllerTest {
 
         RectificationHistory savedHistory = new RectificationHistory(10, 50.0, 1.0, 0);
         savedHistory.setResultSnapshot(outData);
-        when(service.resultToStringForHtml(any(InData.class), any(OutData.class))).thenReturn(Arrays.asList("test"));
         when(service.saveCalculation(any(InData.class))).thenReturn(savedHistory);
 
         mockMvc.perform(postInfoRequest("10", "50", "1.0", "0").with(csrf()))

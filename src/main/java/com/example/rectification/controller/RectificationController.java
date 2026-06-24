@@ -1,10 +1,10 @@
-package com.example.rectificat.controller;
+package com.example.rectification.controller;
 
-import com.example.rectificat.model.Detail;
-import com.example.rectificat.model.InData;
-import com.example.rectificat.model.OutData;
-import com.example.rectificat.model.RectificationHistory;
-import com.example.rectificat.services.RectificationService;
+import com.example.rectification.model.Detail;
+import com.example.rectification.model.InData;
+import com.example.rectification.model.OutData;
+import com.example.rectification.model.RectificationHistory;
+import com.example.rectification.services.RectificationService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -66,62 +66,20 @@ public class RectificationController {
 
     @GetMapping("/view/{id}")
     public String viewHistory(@PathVariable Long id, Model model) {
-        RectificationHistory history = service.getHistoryWithDetails(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "История расчета не найдена: " + id));
-
-        InData data = new InData();
-        data.setAmountOfRawAlcohol(history.getAmountOfRawAlcohol());
-        data.setAlcoholStrength(history.getAlcoholStrength());
-        data.setPower(history.getPower());
-        data.setWater(history.getWater());
-
-        OutData out = history.toOutData();
-        List<Detail> details = history.getDetails();
-
-        model.addAttribute("inData", data);
-
-        model.addAttribute("outData", out);
-        model.addAttribute("details", details);
-        model.addAttribute("historyId", id);
-
-        model.addAttribute("actualCommercialAlcohol", history.getActualCommercialAlcohol());
-        model.addAttribute("actualHeads", history.getActualHeads());
-        model.addAttribute("actualTails", history.getActualTails());
-        model.addAttribute("hasActualData", history.hasActualData());
+        RectificationHistory history = getHistoryOrThrow(id);
+        populateModelFromHistory(model, history, id);
         return "OutData";
     }
 
     @GetMapping("/print/{id}")
     public String printHistory(@PathVariable Long id, Model model) {
-        RectificationHistory history = service.getHistoryWithDetails(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "История расчета не найдена: " + id));
-
-        InData data = new InData();
-        data.setAmountOfRawAlcohol(history.getAmountOfRawAlcohol());
-        data.setAlcoholStrength(history.getAlcoholStrength());
-        data.setPower(history.getPower());
-        data.setWater(history.getWater());
-
+        RectificationHistory history = getHistoryOrThrow(id);
         OutData out = history.toOutData();
-        List<Detail> details = history.getDetails();
-
-        model.addAttribute("inData", data);
-
-        model.addAttribute("outData", out);
-        model.addAttribute("details", details);
-
-        model.addAttribute("actualCommercialAlcohol", history.getActualCommercialAlcohol());
-        model.addAttribute("actualHeads", history.getActualHeads());
-        model.addAttribute("actualTails", history.getActualTails());
-        model.addAttribute("hasActualData", history.hasActualData());
+        InData data = populateModelFromHistory(model, history, id);
 
         model.addAttribute("calcCommercialAlcohol", out.getCommercialAlcohol() * 100.0 / 96.0);
         model.addAttribute("calcHeads", out.getHeads() * 100.0 / 96.0 + data.getWater());
-
         model.addAttribute("calcTails", out.getTails());
-
         model.addAttribute("calculationDate", history.getCalculationDate());
         return "Print";
     }
@@ -218,9 +176,7 @@ public class RectificationController {
             model.addAttribute("errorMessage", "Не удалось сохранить расчет в историю. Пожалуйста, попробуйте позже.");
         }
 
-        List<String> value = service.resultToStringForHtml(inData, outData);
         model.addAttribute("outData", outData);
-        model.addAttribute("result", value);
 
         return "OutData";
 
@@ -260,5 +216,33 @@ public class RectificationController {
 
     private boolean isNonNegative(Double value, double max) {
         return value != null && value >= 0 && value <= max;
+    }
+
+    private RectificationHistory getHistoryOrThrow(Long id) {
+        return service.getHistoryWithDetails(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "История расчета не найдена: " + id));
+    }
+
+    private InData populateModelFromHistory(Model model, RectificationHistory history, Long id) {
+        InData data = new InData();
+        data.setAmountOfRawAlcohol(history.getAmountOfRawAlcohol());
+        data.setAlcoholStrength(history.getAlcoholStrength());
+        data.setPower(history.getPower());
+        data.setWater(history.getWater());
+
+        OutData out = history.toOutData();
+        List<Detail> details = history.getDetails();
+
+        model.addAttribute("inData", data);
+        model.addAttribute("outData", out);
+        model.addAttribute("details", details);
+        model.addAttribute("historyId", id);
+        model.addAttribute("actualCommercialAlcohol", history.getActualCommercialAlcohol());
+        model.addAttribute("actualHeads", history.getActualHeads());
+        model.addAttribute("actualTails", history.getActualTails());
+        model.addAttribute("hasActualData", history.hasActualData());
+
+        return data;
     }
 }

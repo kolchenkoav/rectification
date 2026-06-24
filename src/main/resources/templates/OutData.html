@@ -135,11 +135,11 @@
                         <h5 class="section-title">Остатки и хвосты</h5>
                         <div class="info-row">
                             <span>Спиртовой остаток:</span>
-                            <span th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions} + ' мл АС'"></span>
+                            <span th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFractions} + ' мл АС'"></span>
                         </div>
                         <div class="info-row">
                             <span>АС (ОБОРОТ):</span>
-                            <span class="fw-bold" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFactions - outData.tails} + ' мл'"></span>
+                            <span class="fw-bold" th:text="${outData.absoluteAlcohol - outData.commercialAlcohol - outData.headFractions - outData.tails} + ' мл'"></span>
                         </div>
                         <div class="info-row">
                             <span>Хвосты (ВЫЛИТЬ):</span>

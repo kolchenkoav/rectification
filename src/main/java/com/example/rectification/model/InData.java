@@ -1,4 +1,4 @@
-package com.example.rectificat.model;
+package com.example.rectification.model;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;

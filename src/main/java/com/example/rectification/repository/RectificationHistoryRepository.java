@@ -1,6 +1,6 @@
-package com.example.rectificat.repository;
+package com.example.rectification.repository;
 
-import com.example.rectificat.model.RectificationHistory;
+import com.example.rectification.model.RectificationHistory;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

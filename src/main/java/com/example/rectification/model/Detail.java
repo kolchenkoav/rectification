@@ -1,4 +1,4 @@
-package com.example.rectificat.model;
+package com.example.rectification.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;

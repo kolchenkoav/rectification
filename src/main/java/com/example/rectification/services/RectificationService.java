@@ -1,16 +1,14 @@
-package com.example.rectificat.services;
+package com.example.rectification.services;
 
-import com.example.rectificat.model.InData;
-import com.example.rectificat.model.OutData;
-import com.example.rectificat.model.RectificationHistory;
+import com.example.rectification.model.InData;
+import com.example.rectification.model.OutData;
+import com.example.rectification.model.RectificationHistory;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface RectificationService {
     OutData calc(InData inData);
-    String resultToString(InData inData, OutData outData);
-    List<String> resultToStringForHtml(InData inData, OutData outData);
 
     List<RectificationHistory> getAllHistory();
     void deleteHistory(Long id);
